@@ -82,6 +82,7 @@ function getinfo() {
         fi
     done
 
+    user=""
     while [[ -z "$user" ]]; do
         read -p "Please enter panel sudo username : " user
         if [[ -z "$user" ]]; then
@@ -89,6 +90,7 @@ function getinfo() {
         fi
     done
 
+    password=""
     while [[ -z "$password" ]]; do
         read -p "Please enter panel sudo password : " password
         if [[ -z "$password" ]]; then
@@ -96,6 +98,7 @@ function getinfo() {
         fi
     done
 
+    domain_simple=""
     while [[ ! "$domain_simple" =~ ^[a-zA-Z0-9.-]+\:[0-9]+$ ]]; do
         read -p "Please enter panel domain (like: sub.domain.com:port) : " domain_simple
         if [[ ! "$domain_simple" =~ ^[a-zA-Z0-9.-]+\:[0-9]+$ ]]; then
@@ -103,6 +106,7 @@ function getinfo() {
         fi
     done
 
+    ssl_response=""
     while [[ ! "$ssl_response" =~ ^[ynYN]$ ]]; do
         read -p "Do you have SSL? (y/n): " ssl_response
         if [[ ! "$ssl_response" =~ ^[ynYN]$ ]]; then
@@ -125,25 +129,28 @@ function checkinfo() {
     echo "Panel Sudo Username: $user"
     echo "Panel Sudo Password: $password"
     echo "Panel Domain: $domain"
-}
-while true; do
-    getinfo
-    checkinfo
     read -p "Are these information correct? (y/n): " correct
     if [[ $correct == "y" || $correct == "Y" ]]; then
         clear && echo -e "\n      Checking panel...      \n\n" && printf "%0.s-" {1..50} && echo && sleep 1
         response=$(curl -s -o /dev/null -w "%{http_code}" -X POST -d "username=$user&password=$password" "$domain/api/admin/token")
         if [[ $response -eq 200 ]]; then
             echo "Authentication successful." && sleep 1
-            read -n1 -s -r -p "Press any key to continue"
             break
         else
             echo "Authentication failed. either Haproxy or Wrong information" 
             echo "Run this script again if bot doesnt work"
-            read -n1 -s -r -p "Press any key to continue"
             break
         fi
     fi
+}
+while true; do
+    getinfo
+    checkinfo
+    read -p "do you want to continue with this info? (y/n): " response
+    if [[ $response == "y" || $response == "Y" ]]; then
+        break
+    fi
+    
 done
 
 clear && echo -e "\n      Creating database...      \n\n" && yes '-' | head -n 50 | tr -d '\n\n' && echo
