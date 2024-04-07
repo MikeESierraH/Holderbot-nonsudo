@@ -134,12 +134,10 @@ function checkinfo() {
         clear && echo -e "\n      Checking panel...      \n\n" && printf "%0.s-" {1..50} && echo && sleep 1
         response=$(curl -s -o /dev/null -w "%{http_code}" -X POST -d "username=$user&password=$password" "$domain/api/admin/token")
         if [[ $response -eq 200 ]]; then
-            echo "Authentication successful." && sleep 1
-            break
+            echo "Authentication successful."
         else
-            echo "Authentication failed. either Haproxy or Wrong information" 
+            echo "Authentication failed. either HAproxy or Wrong information" 
             echo "Run this script again if bot doesnt work"
-            break
         fi
     fi
 }
