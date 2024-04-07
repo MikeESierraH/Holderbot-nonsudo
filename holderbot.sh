@@ -36,12 +36,20 @@ clear && echo -e "\n      Checking python library...      \n\n" && yes '-' | hea
 
 pip install -U pyrogram tgcrypto requests Pillow qrcode[pil] persiantools pytz python-dateutil pysqlite3 cdifflib reportlab && \
 sudo apt-get install -y sqlite3
-
+#defining variables
+name=""
+chatid=""
+token=""
+user=""
+password=""
+domain_simple=""
+ssl_response=""
+domain=""
 function getinfo() {
     clear && echo -e "\\n      Complete the information.      \\n\\n"
-    yes '-' | head -n 50 | tr -d '\\n\\n' && echo
+    
 
-    name=""
+    
     while [[ -z "$name" || ! "$name" =~ ^[a-zA-Z]+$ ]]; do
         read -p "Please enter name (nickname) : " name
         if [[ -z "$name" ]]; then
@@ -50,7 +58,7 @@ function getinfo() {
             echo "Name must contain only English letters. Please enter a valid name."
         fi
     done
-    export name
+    
 
     chatid=""
     while [[ ! "$chatid" =~ ^[0-9]+$ ]]; do
@@ -59,7 +67,6 @@ function getinfo() {
             echo "Chat ID must be a number. Please enter a valid number."
         fi
     done
-    export chatid
 
     token=""
     while [[ -z "$token" || ! "$token" =~ ^[0-9]+:.+$ ]]; do
@@ -74,36 +81,28 @@ function getinfo() {
             fi
         fi
     done
-    export token
 
-    user=""
     while [[ -z "$user" ]]; do
         read -p "Please enter panel sudo username : " user
         if [[ -z "$user" ]]; then
             echo "Username cannot be empty. Please enter a valid username."
         fi
     done
-    export user
 
-    password=""
     while [[ -z "$password" ]]; do
         read -p "Please enter panel sudo password : " password
         if [[ -z "$password" ]]; then
             echo "Password cannot be empty. Please enter a valid password."
         fi
     done
-    export password
 
-    domain_simple=""
     while [[ ! "$domain_simple" =~ ^[a-zA-Z0-9.-]+\:[0-9]+$ ]]; do
         read -p "Please enter panel domain (like: sub.domain.com:port) : " domain_simple
         if [[ ! "$domain_simple" =~ ^[a-zA-Z0-9.-]+\:[0-9]+$ ]]; then
             echo "Invalid domain format. Please enter a valid domain in the format sub.domain.com:port."
         fi
     done
-    export domain_simple
 
-    ssl_response=""
     while [[ ! "$ssl_response" =~ ^[ynYN]$ ]]; do
         read -p "Do you have SSL? (y/n): " ssl_response
         if [[ ! "$ssl_response" =~ ^[ynYN]$ ]]; then
@@ -115,11 +114,11 @@ function getinfo() {
         domain="https://$domain_simple"
     else
         domain="http://$domain_simple"
-        export domain
     fi
 
+}
+function checkinfo() {
     clear && echo -e "\\n      Checking information...      \\n\\n"
-    yes '-' | head -n 50 | tr -d '\\n\\n' && echo
     echo "Name: $name"
     echo "Telegram Chat ID: $chatid"
     echo "Telegram Bot Token: $token"
@@ -129,6 +128,7 @@ function getinfo() {
 }
 while true; do
     getinfo
+    checkinfo
     read -p "Are these information correct? (y/n): " correct
     if [[ $correct == "y" || $correct == "Y" ]]; then
         clear && echo -e "\n      Checking panel...      \n\n" && printf "%0.s-" {1..50} && echo && sleep 1
