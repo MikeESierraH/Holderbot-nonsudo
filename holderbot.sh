@@ -119,17 +119,17 @@ while true; do
     echo "Panel Domain: $domain"
 
     read -p "Are these information correct? (y/n): " correct
-    if [[ $correct == "y" || $correct == "Y" ]]; then
-        clear && echo -e "\n      Checking panel...      \n\n" && printf "%0.s-" {1..50} && echo && sleep 1
-        response=$(curl -s -o /dev/null -w "%{http_code}" -X POST -d "username=$user&password=$password" "$domain/api/admin/token")
-        if [[ $response -eq 200 ]]; then
-            echo "Authentication successful." && sleep 1
-            break
-        else
-            echo "Authentication failed. Please check your information and try again." && sleep 2
-        fi
-    fi
-done
+    #if [[ $correct == "y" || $correct == "Y" ]]; then
+        #clear && echo -e "\n      Checking panel...      \n\n" && printf "%0.s-" {1..50} && echo && sleep 1
+        #response=$(curl -s -o /dev/null -w "%{http_code}" -X POST -d "username=$user&password=$password" "$domain/api/admin/token")
+        #if [[ $response -eq 200 ]]; then
+            #echo "Authentication successful." && sleep 1
+            #break
+        #else
+            #echo "Authentication failed. Please check your information and try again." && sleep 2
+        #fi
+    #fi
+#done
 
 clear && echo -e "\n      Creating database...      \n\n" && yes '-' | head -n 50 | tr -d '\n\n' && echo
 
