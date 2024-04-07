@@ -37,9 +37,10 @@ clear && echo -e "\n      Checking python library...      \n\n" && yes '-' | hea
 pip install -U pyrogram tgcrypto requests Pillow qrcode[pil] persiantools pytz python-dateutil pysqlite3 cdifflib reportlab && \
 sudo apt-get install -y sqlite3
 
-while true; do
-    clear && echo -e "\n      Complete the information.      \n\n" && yes '-' | head -n 50 | tr -d '\n\n' && echo
-    
+function getinfo() {
+    clear && echo -e "\\n      Complete the information.      \\n\\n"
+    yes '-' | head -n 50 | tr -d '\\n\\n' && echo
+
     name=""
     while [[ -z "$name" || ! "$name" =~ ^[a-zA-Z]+$ ]]; do
         read -p "Please enter name (nickname) : " name
@@ -49,6 +50,7 @@ while true; do
             echo "Name must contain only English letters. Please enter a valid name."
         fi
     done
+    export name
 
     chatid=""
     while [[ ! "$chatid" =~ ^[0-9]+$ ]]; do
@@ -57,6 +59,7 @@ while true; do
             echo "Chat ID must be a number. Please enter a valid number."
         fi
     done
+    export chatid
 
     token=""
     while [[ -z "$token" || ! "$token" =~ ^[0-9]+:.+$ ]]; do
@@ -71,6 +74,7 @@ while true; do
             fi
         fi
     done
+    export token
 
     user=""
     while [[ -z "$user" ]]; do
@@ -79,6 +83,7 @@ while true; do
             echo "Username cannot be empty. Please enter a valid username."
         fi
     done
+    export user
 
     password=""
     while [[ -z "$password" ]]; do
@@ -87,6 +92,7 @@ while true; do
             echo "Password cannot be empty. Please enter a valid password."
         fi
     done
+    export password
 
     domain_simple=""
     while [[ ! "$domain_simple" =~ ^[a-zA-Z0-9.-]+\:[0-9]+$ ]]; do
@@ -95,6 +101,7 @@ while true; do
             echo "Invalid domain format. Please enter a valid domain in the format sub.domain.com:port."
         fi
     done
+    export domain_simple
 
     ssl_response=""
     while [[ ! "$ssl_response" =~ ^[ynYN]$ ]]; do
@@ -108,26 +115,32 @@ while true; do
         domain="https://$domain_simple"
     else
         domain="http://$domain_simple"
+        export domain
     fi
 
-    clear && echo -e "\n      Checking information...      \n\n" && yes '-' | head -n 50 | tr -d '\n\n' && echo
+    clear && echo -e "\\n      Checking information...      \\n\\n"
+    yes '-' | head -n 50 | tr -d '\\n\\n' && echo
     echo "Name: $name"
     echo "Telegram Chat ID: $chatid"
     echo "Telegram Bot Token: $token"
     echo "Panel Sudo Username: $user"
     echo "Panel Sudo Password: $password"
     echo "Panel Domain: $domain"
-
+}
+while true; do
+    getinfo
     read -p "Are these information correct? (y/n): " correct
     if [[ $correct == "y" || $correct == "Y" ]]; then
         clear && echo -e "\n      Checking panel...      \n\n" && printf "%0.s-" {1..50} && echo && sleep 1
         response=$(curl -s -o /dev/null -w "%{http_code}" -X POST -d "username=$user&password=$password" "$domain/api/admin/token")
         if [[ $response -eq 200 ]]; then
             echo "Authentication successful." && sleep 1
+            read -n1 -s -r -p "Press any key to continue"
             break
         else
-            echo "Authentication failed. either Haproxy or wrong information" 
-            echo "Run this script again if bot doesnt work" && sleep 2
+            echo "Authentication failed. either Haproxy or Wrong information" 
+            echo "Run this script again if bot doesnt work"
+            read -n1 -s -r -p "Press any key to continue"
             break
         fi
     fi
