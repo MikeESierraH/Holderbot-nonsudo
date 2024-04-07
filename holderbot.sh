@@ -124,8 +124,10 @@ while true; do
         response=$(curl -s -o /dev/null -w "%{http_code}" -X POST -d "username=$user&password=$password" "$domain/api/admin/token")
         if [[ $response -eq 200 ]]; then
             echo "Authentication successful." && sleep 1
+            break
         else
-            echo "Authentication failed. Please check your information and try again." && sleep 2
+            echo "Authentication failed. okease reinstall if bot doesnt work." && sleep 2
+            break
         fi
     fi
 done
